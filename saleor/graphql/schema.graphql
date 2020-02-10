@@ -2351,6 +2351,8 @@ type Mutation {
   permissionGroupDelete(id: ID!): PermissionGroupDelete
   permissionGroupAssignUsers(id: ID!, input: UsersInput!): PermissionGroupAssignUsers
   permissionGroupUnassignUsers(id: ID!, input: UsersInput!): PermissionGroupUnassignUsers
+  createStore(input: StoreInput!): StoreCreate
+  updateStore(id: ID!, input: StoreInput!): StoreUpdate
 }
 
 input NameTranslationInput {
@@ -3613,6 +3615,8 @@ type Query {
   translation(id: ID!, kind: TranslatableKinds!): TranslatableItem
   stock(id: ID!): Stock
   stocks(filter: StockFilterInput, before: String, after: String, first: Int, last: Int): StockCountableConnection
+  store(id: ID!): Store
+  stores(filter: StoreFilterInput, before: String, after: String, first: Int, last: Int): StoreCountableConnection
   shop: Shop
   shippingZone(id: ID!): ShippingZone
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection
@@ -5019,4 +5023,58 @@ union _Entity = Address | ServiceAccount | User | Group | ProductVariant | Produ
 
 type _Service {
   sdl: String
+}
+
+input StoreInput {
+  name: String!
+  country: CountryCode!
+}
+
+type Store implements Node {
+  users: [User!]
+  user: user
+  id: ID!
+  name: String!
+  country: CountryDisplay!
+}
+
+type StoreCreate {
+  errors: [Error!]
+  storeErrors: [StoreError!]
+  store: Store
+}
+
+type StoreUpdate {
+  errors: [Error!]
+  storeErrors: [StoreError!]
+  store: Store
+}
+
+enum StoreErorrCode {
+  ALREADY_EXISTS
+  GRAPHQL_ERROR
+  INVALID
+  NOT_FOUND
+  REQUIRED
+  UNIQUE
+}
+
+type StoreError {
+  field: String
+  message: String
+  code: StoreErorrCode
+}
+type StoreCountableConnection {
+  pageInfo: PageInfo!
+  edges: [StoreCountableEdge!]!
+  totalCount: Int
+}
+
+type StoreCountableEdge {
+  node: Store!
+  cursor: String!
+}
+
+input StoreFilterInput {
+  search: String
 }

@@ -64,6 +64,7 @@ from ...product.thumbnails import (
     create_product_thumbnails,
 )
 from ...shipping.models import ShippingMethod, ShippingMethodType, ShippingZone
+from ...store.models import Store
 from ...warehouse.management import increase_stock
 from ...warehouse.models import Stock, Warehouse
 
@@ -137,6 +138,13 @@ def get_weight(weight):
     value, unit = weight.split()
     return Weight(**{unit: value})
 
+def create_store():
+    # TODO: for not don't need to multiple store
+    store, _ = Store.objects.update_or_create(pk=1, defaults={
+        "name": "Sample Store",
+        "country": "CN",
+    })
+    return store
 
 def create_product_types(product_type_data):
     for product_type in product_type_data:
@@ -1184,3 +1192,18 @@ def get_product_list_images_dir(placeholder_dir):
 def get_image(image_dir, image_name):
     img_path = os.path.join(image_dir, image_name)
     return File(open(img_path, "rb"), name=image_name)
+
+
+def create_store_products(store, products):
+    if not store:
+        store = Store.objects.first()
+
+    if not products:
+        products = Product.objects.all()
+
+    for product in products:
+        product.store = store
+        product.save()
+        yield "Set Store [{0}]{1} to Product [{2}]{3}".format(
+            store.id, store.name, product.id, product.name
+        )

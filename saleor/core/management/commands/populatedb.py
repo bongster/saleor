@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from ....account.utils import create_superuser
+from ....account.utils import create_superuser, create_operator
 from ...utils.random_data import (
     add_address_to_admin,
     create_gift_card,
@@ -16,6 +16,8 @@ from ...utils.random_data import (
     create_product_sales,
     create_products_by_schema,
     create_shipping_zones,
+    create_store,
+    create_store_products,
     create_users,
     create_vouchers,
     create_warehouses,
@@ -34,6 +36,13 @@ class Command(BaseCommand):
             dest="createsuperuser",
             default=False,
             help="Create admin account",
+        )
+        parser.add_argument(
+            "--skipoperator",
+            action="store_true",
+            dest="skipoperator",
+            default=False,
+            help="Create operator account",
         )
         parser.add_argument(
             "--withoutimages",
@@ -87,6 +96,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.make_database_faster()
         create_images = not options["withoutimages"]
+
+        store = create_store()
+        self.stdout.write("Created store")
         for msg in create_shipping_zones():
             self.stdout.write(msg)
         create_warehouses()
@@ -110,11 +122,22 @@ class Command(BaseCommand):
         for msg in create_menus():
             self.stdout.write(msg)
 
+        for msg in create_store_products():
+            self.stdout.write(msg)
+
+        self.stdout.write(msg)
         if options["createsuperuser"]:
             credentials = {"email": "admin@example.com", "password": "admin"}
             msg = create_superuser(credentials)
             self.stdout.write(msg)
             add_address_to_admin(credentials["email"])
+
+        if not options["skipoperator"]:
+            credentials = {"email": "operator@example.com", "password": "operator"}
+            msg = create_operator(credentials)
+            add_address_to_admin(credentials["email"])
+            self.stdout.write(msg)
+
         if not options["skipsequencereset"]:
             self.sequence_reset()
 

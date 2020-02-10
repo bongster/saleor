@@ -17,6 +17,7 @@ from oauthlib.common import generate_token
 from phonenumber_field.modelfields import PhoneNumber, PhoneNumberField
 from versatileimagefield.fields import VersatileImageField
 
+from ..store.models import Store
 from ..core.models import ModelWithMetadata
 from ..core.permissions import AccountPermissions, BasePermissionEnum
 from ..core.utils.json_serializer import CustomJsonEncoder
@@ -150,6 +151,9 @@ class User(PermissionsMixin, ModelWithMetadata, AbstractBaseUser):
         Address, related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
     avatar = VersatileImageField(upload_to="user-avatars", blank=True, null=True)
+    default_store = models.ForeignKey(
+        Store, related_name='+', null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     USERNAME_FIELD = "email"
 

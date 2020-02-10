@@ -82,6 +82,7 @@ from saleor.warehouse.models import Stock, Warehouse
 from saleor.webhook.event_types import WebhookEventType
 from saleor.webhook.models import Webhook
 from saleor.wishlist.models import Wishlist
+from saleor.store.models import Store
 from tests.utils import create_image
 
 
@@ -1312,6 +1313,10 @@ def permission_manage_staff():
 def permission_manage_products():
     return Permission.objects.get(codename="manage_products")
 
+@pytest.fixture
+def permission_manage_stores():
+    return Permission.objects.get(codename="manage_stores")
+
 
 @pytest.fixture
 def permission_manage_shipping():
@@ -1911,3 +1916,12 @@ def stock(variant, warehouse):
         warehouse=warehouse,
         defaults={"quantity": 5, "quantity_allocated": 3},
     )[0]
+
+@pytest.fixture
+def store():
+    return Store.objects.get_or_create(
+        name="Sample store",
+        country="CN",
+        defaults={"name": 'Sample Store', "country": "CN"},
+    )[0]
+

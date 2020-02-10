@@ -194,6 +194,7 @@ MIDDLEWARE = [
     "saleor.core.middleware.extensions",
     "saleor.graphql.middleware.jwt_middleware",
     "saleor.graphql.middleware.service_account_middleware",
+    "saleor.core.middleware.store",
 ]
 
 INSTALLED_APPS = [
@@ -226,6 +227,8 @@ INSTALLED_APPS = [
     "saleor.warehouse",
     "saleor.webhook",
     "saleor.wishlist",
+    # Custom apps
+    "saleor.store",
     # External apps
     "versatileimagefield",
     "django_measurement",

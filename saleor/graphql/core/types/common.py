@@ -16,6 +16,7 @@ from ..enums import (
     ShippingErrorCode,
     ShopErrorCode,
     StockErrorCode,
+    StoreErrorCode,
     WarehouseErrorCode,
     WebhookErrorCode,
     WishlistErrorCode,
@@ -96,6 +97,8 @@ class ExtensionsError(Error):
 class StockError(Error):
     code = StockErrorCode(description="The error code.")
 
+class StoreError(Error):
+    code = StoreErrorCode(description="The error code.")
 
 class WarehouseError(Error):
     code = WarehouseErrorCode(description="The error code.")

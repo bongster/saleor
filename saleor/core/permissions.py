@@ -59,6 +59,8 @@ class SitePermissions(BasePermissionEnum):
 class WebhookPermissions(BasePermissionEnum):
     MANAGE_WEBHOOKS = "webhook.manage_webhooks"
 
+class StorePermissions(BasePermissionEnum):
+    MANAGE_STORES = "store.manage_stores"
 
 PERMISSIONS_ENUMS = [
     AccountPermissions,
@@ -72,6 +74,7 @@ PERMISSIONS_ENUMS = [
     ShippingPermissions,
     SitePermissions,
     WebhookPermissions,
+    StorePermissions,
     CheckoutPermissions,
 ]
 

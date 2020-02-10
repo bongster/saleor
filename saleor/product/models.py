@@ -26,6 +26,7 @@ from ..core.models import (
     PublishableModel,
     PublishedQuerySet,
     SortableModel,
+    ModelWithStore,
 )
 from ..core.permissions import ProductPermissions
 from ..core.utils import build_absolute_uri
@@ -243,7 +244,7 @@ class ProductsQueryset(PublishedQuerySet):
         return qs
 
 
-class Product(SeoModel, ModelWithMetadata, PublishableModel):
+class Product(SeoModel, ModelWithMetadata, PublishableModel, ModelWithStore):
     product_type = models.ForeignKey(
         ProductType, related_name="products", on_delete=models.CASCADE
     )

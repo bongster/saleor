@@ -101,6 +101,22 @@ def site(get_response):
     return _site_middleware
 
 
+def store(get_response):
+    def _get_store(request):
+        return request.user.default_store
+
+    def _store_middleware(request):
+        if (
+            request and
+            hasattr(request, 'user') and
+            request.user.is_authenticated
+        ):
+            request.store = _get_store(request)
+        return get_response(request)
+
+    return _store_middleware
+
+
 def extensions(get_response):
     """Assign extensions manager."""
 

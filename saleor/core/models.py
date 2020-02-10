@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import F, Max, Q
@@ -103,3 +104,10 @@ class ModelWithMetadata(models.Model):
 
     def clear_stored_meta_for_client(self, namespace: str, client: str):
         self.meta.get(namespace, {}).pop(client, None)
+
+class ModelWithStore(models.Model):
+    store = models.ForeignKey(
+        'store.Store', blank=True, null=True, on_delete=models.SET_NULL
+    )
+    class Meta:
+        abstract = True

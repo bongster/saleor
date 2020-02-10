@@ -8,6 +8,7 @@ from django.core.files import File
 from django.utils import timezone
 
 from ..account.error_codes import AccountErrorCode
+from ..store.models import Store
 from ..checkout import AddressType
 from ..core.utils import create_thumbnails
 from ..extensions.manager import get_extensions_manager
@@ -73,6 +74,29 @@ def create_superuser(credentials):
         msg = "Superuser - %(email)s/%(password)s" % credentials
     else:
         msg = "Superuser already exists - %(email)s" % credentials
+    return msg
+
+
+def create_operator(credentials, store):
+    if not store:
+        store = Store.objects.first()
+
+    user, created = User.objects.get_or_create(
+        email=credentials["email"],
+        defaults={"is_active": True, "is_staff": True, "is_superuser": False },
+    )
+    store.users.add(user)
+    if created:
+        user.avatar = get_random_avatar()
+        user.set_password(credentials["password"])
+        user.default_store = store
+        user.save()
+        create_thumbnails(
+            pk=user.pk, model=User, size_set="user_avatars", image_attr="avatar"
+        )
+        msg = "Operator - %(email)s/%(password)s" % credentials
+    else:
+        msg = "Operator already exists - %(email)s" % credentials
     return msg
 
 

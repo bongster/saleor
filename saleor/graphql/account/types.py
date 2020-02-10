@@ -6,6 +6,7 @@ from graphene_federation import key
 from graphql_jwt.exceptions import PermissionDenied
 
 from ...account import models
+from ...store.models import Store as store_model
 from ...checkout.utils import get_user_checkout
 from ...core.permissions import AccountPermissions, OrderPermissions, get_permissions
 from ...order import models as order_models
@@ -20,6 +21,33 @@ from ..utils import format_permissions_for_display
 from ..wishlist.resolvers import resolve_wishlist_items_from_user
 from ..wishlist.types import WishlistItem
 from .enums import CountryCodeEnum, CustomerEventsEnum
+
+
+@key(fields="id")
+class Store(CountableDjangoObjectType):
+    name = graphene.Field(
+        graphene.String, required=True, description="Store's name."
+    )
+    country = graphene.Field(
+        CountryDisplay, required=False, description="Store's country."
+    )
+
+    class Meta:
+        description = "Represents user stores data."
+        interfaces = [relay.Node]
+        model = store_model
+        only_fields = [
+            "name",
+            "country",
+        ]
+
+    @staticmethod
+    def resolve_name(root: store_model, _info):
+        return root.name
+
+    @staticmethod
+    def resolve_country(root: store_model, _info):
+        return CountryDisplay(code=root.country.code, country=root.country.name)
 
 
 class AddressInput(graphene.InputObjectType):
@@ -244,6 +272,10 @@ class User(MetadataObjectType, CountableDjangoObjectType):
         graphene.List(Address, description="List of all user's addresses."),
         model_field="addresses",
     )
+    stores = gql_optimizer.field(
+        graphene.List(Store, description="List of all user's stores."),
+        model_field="stores",
+    )
     checkout = graphene.Field(
         Checkout, description="Returns the last open checkout of this user."
     )
@@ -275,6 +307,7 @@ class User(MetadataObjectType, CountableDjangoObjectType):
         "saleor.graphql.payment.types.PaymentSource",
         description="List of stored payment sources.",
     )
+    
     wishlist = PrefetchingConnectionField(WishlistItem, description="User's wishlist.")
 
     class Meta:
@@ -295,6 +328,9 @@ class User(MetadataObjectType, CountableDjangoObjectType):
             "note",
             "token",
         ]
+
+    def resolve_stores(root: models.User, info):
+        return root.stores.all()
 
     @staticmethod
     def resolve_addresses(root: models.User, _info, **_kwargs):

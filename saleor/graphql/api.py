@@ -22,6 +22,7 @@ from .warehouse.schema import (
 )
 from .webhook.schema import WebhookMutations, WebhookQueries
 from .wishlist.schema import WishlistMutations
+from .store.schema import StoreQueries, StoreMutations
 
 
 class Query(
@@ -39,6 +40,7 @@ class Query(
     ShippingQueries,
     ShopQueries,
     StockQueries,
+    StoreQueries,
     TranslationQueries,
     WarehouseQueries,
     WebhookQueries,
@@ -61,6 +63,7 @@ class Mutation(
     ShippingMutations,
     ShopMutations,
     StockMutations,
+    StoreMutations,
     WarehouseMutations,
     WebhookMutations,
     WishlistMutations,
